@@ -111,14 +111,25 @@ func main() {
 		paired, mateOne, mateTwo := getMateInformation(flags)
 		mate := getMateNumber(mateOne, mateTwo)
 
-		for _, thisRead := range intAll {
+		// for _, thisRead := range intAll {
 
-			if thisRead == r.Name {
-				fmt.Printf("list:%v, r.record: %v\n", thisRead, r.Name)
-			}
+		// 	if thisRead == r.Name {
+		// 		fmt.Printf("list:%v, r.record: %v\n", thisRead, r.Name)
+		// 	}
+		// }
+		for _, co := range r.Cigar {
+			typeC := co.Type()
+			lenC := co.Len()
+			fmt.Printf("%v\t%v\t", typeC, lenC)
+			// HEY GUESS WHO CAN ACCESS THE BAM r.CIGAR! BRIE CAN
+			// CIGAR PARSER WORKS M8s
+			//SO
+			// Print type. To line
+			// Sum lines. Make TLEN relevant
+			// Refer back to notes you made when you were 70% less crazy. <3
+
 		}
-
-		fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, mate, mateTwo)
+		fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, r.TempLen, r.Cigar, mate)
 		// fmt.Fprintf(out, "%v\n", r.Name)
 
 	}
