@@ -80,21 +80,32 @@ func main() {
 		r := i.Record()
 		// outCount++
 		flags := r.Flags.String()
-		paired := strings.Split(flags, "")[0]
-		mateOne := strings.Split(flags, "")[6]
-		mateTwo := strings.Split(flags, "")[7]
+		paired, mateOne, mateTwo := getMateInformation(flags)
+		mate := getMateNumber(mateOne, mateTwo)
 
-		var mate string
-		switch {
-		case mateOne == "1" && mateTwo == "-":
-			mate = "one"
-		case mateOne == "-" && mateTwo == "2":
-			mate = "two"
-		default:
-			mate = "error"
-		}
 		fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, mate, mateTwo)
 
 	}
 	// fmt.Println(outCount, inCount, match)
+}
+
+func getMateInformation(flags string) (paired, mateOne, mateTwo string) {
+
+	pairVal := strings.Split(flags, "")[0]
+	mateOneVal := strings.Split(flags, "")[6]
+	mateTwoVal := strings.Split(flags, "")[7]
+	return pairVal, mateOneVal, mateTwoVal
+}
+
+func getMateNumber(one, two string) string {
+	var mate string
+	switch {
+	case one == "1" && two == "-":
+		mate = "one"
+	case one == "-" && two == "2":
+		mate = "two"
+	default:
+		mate = "error"
+	}
+	return mate
 }
