@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -29,6 +30,33 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Begin")
+
+	file := fmt.Sprintf("DataDump")
+	out, err := os.Create(file)
+	if err != nil {
+		log.Fatalf("failed to create out %s: %v", file, err)
+	}
+	defer out.Close()
+
+	// Read in the SV table
+	fInt, err := os.Open("readNames.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fInt.Close()
+
+	var intAll []string
+	sInt := bufio.NewScanner(fInt)
+
+	for sInt.Scan() {
+		// if i > 0 { // IMPORTANT - ASSUMES THERE IS A HEADER, ELSE IT WILL SKIP THE FIRST SV
+		intAll = append(intAll, sInt.Text())
+		// }
+		// i++
+	}
+	if err := sInt.Err(); err != nil {
+		log.Fatal(err)
+	}
 
 	// read index
 	ind, err := os.Open(index)
@@ -59,9 +87,9 @@ func main() {
 	}
 
 	// set chunks - based on intervals
-	chunks, err := bai.Chunks(refs["chr17"], 52612, 71880)
+	chunks, berr := bai.Chunks(refs["chr17"], 52612, 71880)
 	if err != nil {
-		fmt.Println("failed to read chunks: ", err)
+		fmt.Println("failed to read chunks: ", berr)
 		os.Exit(10)
 		// You know, I still don't know if this code is user defined.
 		// I'm pretty sure it is. I mean, I could put any number there
@@ -83,7 +111,15 @@ func main() {
 		paired, mateOne, mateTwo := getMateInformation(flags)
 		mate := getMateNumber(mateOne, mateTwo)
 
-		fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, mate, mateTwo)
+		for _, thisRead := range intAll {
+
+			if thisRead == r.Name {
+				fmt.Printf("list:%v, r.record: %v\n", thisRead, r.Name)
+			}
+		}
+
+		fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, mate, mateTwo)
+		// fmt.Fprintf(out, "%v\n", r.Name)
 
 	}
 	// fmt.Println(outCount, inCount, match)
