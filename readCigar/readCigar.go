@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/biogo/hts/bam"
 	"github.com/biogo/hts/sam"
@@ -72,28 +73,28 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	outCount := 0
-	inCount := 0
-	match := 0
+	// outCount := 0
+	// inCount := 0
+	// match := 0
 	for i.Next() {
-		fmt.Println("here")
 		r := i.Record()
-		outCount++
+		// outCount++
+		flags := r.Flags.String()
+		paired := strings.Split(flags, "")[0]
+		mateOne := strings.Split(flags, "")[6]
+		mateTwo := strings.Split(flags, "")[7]
 
-		fmt.Printf("%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, r.TempLen)
-
-		j, err := bam.NewIterator(br, chunks)
-		if err != nil {
-			log.Fatal(err)
+		var mate string
+		switch {
+		case mateOne == "1" && mateTwo == "-":
+			mate = "one"
+		case mateOne == "-" && mateTwo == "2":
+			mate = "two"
+		default:
+			mate = "error"
 		}
-		for j.Next() {
-			q := j.Record()
-			inCount++
-			if q.Name == r.Name {
-				match++
-			}
-		}
+		fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, mate, mateTwo)
 
 	}
-	fmt.Println(outCount, inCount, match)
+	// fmt.Println(outCount, inCount, match)
 }
