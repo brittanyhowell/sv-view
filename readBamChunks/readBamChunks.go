@@ -24,28 +24,20 @@ type SVfile struct {
 	TypeofSV string
 }
 
-// Specifically the auxfields needed for this analysis.
-type auxfields struct {
-	X0 sam.Tag
-	X1 sam.Tag
-	XT sam.Tag
-	XN sam.Tag
-}
-
-var (
-	fSplice    bool
-	index      string
-	bamFile    string
-	intFile    string
-	outPath    string
-	outName    string
-	sampleName string
-)
-var (
-	sv SVfile
-)
-
 func main() {
+
+	var (
+		fSplice    bool
+		index      string
+		bamFile    string
+		intFile    string
+		outPath    string
+		outName    string
+		sampleName string
+	)
+	var (
+		sv SVfile
+	)
 	// For reference,
 	//the first is the variable,
 	//the second is the flag for the call command,
@@ -187,6 +179,8 @@ func main() {
 
 			// remove hash from read name
 			readName := strings.Replace(r.Name, "#", "_", -1) // -1 so it replaces all instances
+
+			flags := r.Flags
 
 			fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
 				readName, // to ID
