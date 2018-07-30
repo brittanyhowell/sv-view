@@ -13,17 +13,10 @@ import (
 
 func main() {
 	var (
-		fSplice    bool
-		index      string
-		bamFile    string
-		intFile    string
-		outPath    string
-		outName    string
-		sampleName string
+		index   string
+		bamFile string
 	)
-	var (
-		sv SVfile
-	)
+
 	// For reference,
 	//the first is the variable,
 	//the second is the flag for the call command,
@@ -31,7 +24,6 @@ func main() {
 	//the fourth is the description
 	flag.StringVar(&index, "index", "", "name index file")
 	flag.StringVar(&bamFile, "bam", "", "name bam file")
-	flag.StringVar(&sampleName, "sample", "", "name of sample")
 
 	flag.Parse()
 
@@ -66,20 +58,42 @@ func main() {
 	}
 
 	// set chunks - based on intervals
-	chunks, err := bai.Chunks(refs[sv.Chr], sv.Start, sv.End)
+	chunks, err := bai.Chunks(refs["chr17"], 52612, 71880)
 	if err != nil {
-		fmt.Println(chunks, err)
-		// continue
+		fmt.Println("failed to read chunks: ", err)
+		os.Exit(10)
+		// You know, I still don't know if this code is user defined.
+		// I'm pretty sure it is. I mean, I could put any number there
+		// And it would print it, and then in my documentation, I could write
+		// yeah, exit code x means THIS.
 	}
 
 	i, err := bam.NewIterator(br, chunks)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	outCount := 0
+	inCount := 0
+	match := 0
 	for i.Next() {
-
+		fmt.Println("here")
 		r := i.Record()
-	}
+		outCount++
 
+		fmt.Printf("%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, r.TempLen)
+
+		j, err := bam.NewIterator(br, chunks)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for j.Next() {
+			q := j.Record()
+			inCount++
+			if q.Name == r.Name {
+				match++
+			}
+		}
+
+	}
+	fmt.Println(outCount, inCount, match)
 }
