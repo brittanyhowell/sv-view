@@ -8,7 +8,21 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/biogo/hts/sam"
 )
+
+type binnedReadsTable struct {
+	name   string
+	start  int
+	end    int
+	width  int
+	bin    string
+	cigar  sam.Cigar
+	mScore string
+	aScore string
+	flags  string
+}
 
 func main() {
 	var (
@@ -16,17 +30,6 @@ func main() {
 		outPath string
 		outFile string
 	)
-	type binnedReadsTable struct {
-		name   string
-		start  int
-		end    int
-		width  int
-		bin    string
-		cigar  string
-		mScore string
-		aScore string
-		flags  string
-	}
 
 	// For reference,
 	//the first is the variable,
@@ -69,34 +72,8 @@ func main() {
 	}
 
 	for _, rIn := range readIn {
-		rsplit := strings.Split(rIn, "\t")
 
-		rName := rsplit[0]
-		rBin := rsplit[4]
-		rCigar := rsplit[5]
-		rMapq := rsplit[6]
-		rAS := rsplit[7]
-		rFlags := rsplit[8]
-
-		rStartS, _ := strconv.ParseFloat(rsplit[1], 1)
-		rEndS, _ := strconv.ParseFloat(rsplit[2], 1)
-		rWidthS, _ := strconv.ParseFloat(rsplit[3], 1)
-
-		rStart := int(rStartS)
-		rEnd := int(rEndS)
-		rWidth := int(rWidthS)
-
-		r := binnedReadsTable{
-			name:   rName,
-			start:  rStart,
-			end:    rEnd,
-			width:  rWidth,
-			bin:    rBin,
-			cigar:  rCigar,
-			mScore: rMapq,
-			aScore: rAS,
-			flags:  rFlags,
-		}
+		r := constructAStruct(rIn)
 
 		fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
 			r.name,
@@ -111,4 +88,37 @@ func main() {
 
 	}
 
+}
+func constructAStruct(lineIn string) binnedReadsTable {
+
+	rsplit := strings.Split(lineIn, "\t")
+	rName := rsplit[0]
+	rBin := rsplit[4]
+	rMapq := rsplit[6]
+	rAS := rsplit[7]
+	rFlags := rsplit[8]
+
+	rCigar, _ := sam.ParseCigar([]byte(rsplit[5]))
+
+	rStartS, _ := strconv.ParseFloat(rsplit[1], 1)
+	rEndS, _ := strconv.ParseFloat(rsplit[2], 1)
+	rWidthS, _ := strconv.ParseFloat(rsplit[3], 1)
+
+	rStart := int(rStartS)
+	rEnd := int(rEndS)
+	rWidth := int(rWidthS)
+
+	r := binnedReadsTable{
+		name:   rName,
+		start:  rStart,
+		end:    rEnd,
+		width:  rWidth,
+		bin:    rBin,
+		cigar:  rCigar,
+		mScore: rMapq,
+		aScore: rAS,
+		flags:  rFlags,
+	}
+
+	return r
 }
