@@ -104,11 +104,12 @@ func main() {
 	// outCount := 0
 	// inCount := 0
 	// match := 0
+	seconds := 0
 	for i.Next() {
 		r := i.Record()
 		// outCount++
 		flags := r.Flags.String()
-		paired, mateOne, mateTwo := getMateInformation(flags)
+		paired, mateOne, mateTwo, sAlign := getMateInformation(flags)
 		mate := getMateNumber(mateOne, mateTwo)
 
 		// for _, thisRead := range intAll {
@@ -117,31 +118,42 @@ func main() {
 		// 		fmt.Printf("list:%v, r.record: %v\n", thisRead, r.Name)
 		// 	}
 		// }
+		if sAlign == "_" {
+			seconds++
+		}
+		if paired != "p" {
+			fmt.Println("Read unpaired..SOEMTHINGSEIHPWWRTRROOOOONNGGGGG", r.Name)
+		}
+
 		for _, co := range r.Cigar {
 			typeC := co.Type()
 			lenC := co.Len()
-			fmt.Printf("%v\t%v\t", typeC, lenC)
+
+			fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t", r.Name, r.Pos, r.Pos+r.Seq.Length, r.TempLen, r.Cigar, mate, seconds)
+
+			fmt.Printf("%v %v ", typeC, lenC)
 			// HEY GUESS WHO CAN ACCESS THE BAM r.CIGAR! BRIE CAN
 			// CIGAR PARSER WORKS M8s
 			//SO
 			// Print type. To line
 			// Sum lines. Make TLEN relevant
 			// Refer back to notes you made when you were 70% less crazy. <3
-
+			fmt.Printf("\n")
 		}
-		fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\n", r.Name, r.Pos, r.Pos+r.Seq.Length, paired, r.TempLen, r.Cigar, mate)
+
 		// fmt.Fprintf(out, "%v\n", r.Name)
 
 	}
 	// fmt.Println(outCount, inCount, match)
 }
 
-func getMateInformation(flags string) (paired, mateOne, mateTwo string) {
+func getMateInformation(flags string) (paired, mateOne, mateTwo, secAlign string) {
 
 	pairVal := strings.Split(flags, "")[0]
 	mateOneVal := strings.Split(flags, "")[6]
 	mateTwoVal := strings.Split(flags, "")[7]
-	return pairVal, mateOneVal, mateTwoVal
+	secondaryAlign := strings.Split(flags, "")[8]
+	return pairVal, mateOneVal, mateTwoVal, secondaryAlign
 }
 
 func getMateNumber(one, two string) string {
