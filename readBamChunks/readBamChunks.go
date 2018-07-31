@@ -1,4 +1,3 @@
-// Comment I guess?
 package main
 
 import (
@@ -27,7 +26,6 @@ type SVfile struct {
 func main() {
 
 	var (
-		fSplice    bool
 		index      string
 		bamFile    string
 		intFile    string
@@ -180,16 +178,18 @@ func main() {
 			// remove hash from read name
 			readName := strings.Replace(r.Name, "#", "_", -1) // -1 so it replaces all instances
 
-			flags := r.Flags
+			flags := r.Flags.String()
 
-			fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
-				readName, // to ID
-				sv.Chr,   // Chromosome - yes it is of the SV not the read but if it maps it has to match so it should be fine.
-				start,    // first mapped base
-				end,      // last mapped base
-				r.Cigar,  // cigar string
-				r.MapQ,   // read quality
-				valAS,    // Alignment score
+			fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
+				readName,  // to ID
+				sv.Chr,    // Chromosome - yes it is of the SV not the read but if it maps it has to match so it should be fine.
+				start,     // first mapped base
+				end,       // last mapped base
+				r.TempLen, // Length of insert
+				r.Cigar,   // cigar string
+				r.MapQ,    // read quality
+				valAS,     // Alignment score
+				flags,     // Flags
 			)
 		}
 		fmt.Printf("There were %v reads in the interval %v\n", howManyReads, sv.Name)
