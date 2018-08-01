@@ -22,6 +22,7 @@ type binnedReadsTable struct {
 	mScore string
 	aScore string
 	flags  string
+	tlen   int
 }
 
 func main() {
@@ -71,20 +72,76 @@ func main() {
 		log.Fatal(err)
 	}
 
+	seconds := 0 // Number of secondary alignments
+
 	for _, rIn := range readIn {
 
+		// Set information.
 		r := constructAStruct(rIn)
 
-		fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
-			r.name,
-			r.start,
-			r.end,
-			r.width,
-			r.bin,
-			r.cigar,
-			r.mScore,
-			r.aScore,
-			r.flags)
+		flags := r.flags
+		paired, mateOne, mateTwo, sAlign := getMateInformation(flags)
+		mate := getMateNumber(mateOne, mateTwo)
+
+		// Quality checks
+		if sAlign == "_" {
+			seconds++
+		}
+		if paired != "p" {
+			fmt.Println("Read unpaired..SOEMTHINGSEIHPWWRTRROOOOONNGGGGG", r.name)
+		}
+
+		// Change the Alignment score formatting
+		aScore := strings.Replace(r.aScore, "AS:i:", "", -1) // -1 so it replaces all instances
+
+		// Count the number of cigar operators, crudely
+		numCO := countCigarOps(r.cigar)
+
+		// Variable cCurrent is the number operator currently working on
+		var cCurrent int
+		cCurrent = 1
+
+		// cigar specific coordinates:
+		var (
+			start int
+			end   int
+		)
+
+		mapped := false
+		for _, co := range r.cigar {
+
+			cStatus := getCigarStatus(numCO, cCurrent)
+			typeC := co.Type()
+			lenC := co.Len()
+
+			mapped = checkIfMappedYet(typeC, mapped)
+
+			// adjust r.Pos if first value is soft clipped
+			if typeC == sam.CigarSoftClipped && mapped == false {
+				start = r.start - lenC
+				end = r.start
+			}
+			//%v\t%v\t%v\t%v\t%v\t%v\t
+
+			fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
+				// r.name,
+				start,
+				end,
+				// r.width,
+				// r.bin,
+				// r.mScore,
+				mate,
+				aScore,
+				// r.tlen,
+				// numCO,
+				cStatus,
+				r.cigar,
+				typeC,
+				lenC,
+			)
+
+			cCurrent++
+		}
 
 	}
 
@@ -103,10 +160,12 @@ func constructAStruct(lineIn string) binnedReadsTable {
 	rStartS, _ := strconv.ParseFloat(rsplit[1], 1)
 	rEndS, _ := strconv.ParseFloat(rsplit[2], 1)
 	rWidthS, _ := strconv.ParseFloat(rsplit[3], 1)
+	rTlenS, _ := strconv.ParseFloat(rsplit[9], 1)
 
 	rStart := int(rStartS)
 	rEnd := int(rEndS)
 	rWidth := int(rWidthS)
+	rTlen := int(rTlenS)
 
 	r := binnedReadsTable{
 		name:   rName,
@@ -118,7 +177,66 @@ func constructAStruct(lineIn string) binnedReadsTable {
 		mScore: rMapq,
 		aScore: rAS,
 		flags:  rFlags,
+		tlen:   rTlen,
 	}
 
 	return r
+}
+
+func getMateInformation(flags string) (paired, mateOne, mateTwo, secAlign string) {
+
+	pairVal := strings.Split(flags, "")[0]
+	mateOneVal := strings.Split(flags, "")[6]
+	mateTwoVal := strings.Split(flags, "")[7]
+	secondaryAlign := strings.Split(flags, "")[8]
+	return pairVal, mateOneVal, mateTwoVal, secondaryAlign
+}
+
+func getMateNumber(one, two string) string {
+	var mate string
+	switch {
+	case one == "1" && two == "-":
+		mate = "one"
+	case one == "-" && two == "2":
+		mate = "two"
+	default:
+		mate = "error"
+	}
+	return mate
+}
+func countCigarOps(cigar sam.Cigar) int {
+	// Hi if anyone finds this I know it's garbage don't judge too harshly.
+	var numCO int
+	for numCO = range cigar {
+	}
+	numCO++
+	return numCO
+}
+
+func getCigarStatus(numberCOs, currentCO int) string {
+	var status string
+
+	if numberCOs == 1 {
+		status = "single"
+	} else {
+		switch {
+		case currentCO == 1:
+			status = "first"
+		case currentCO == 2:
+			status = "second"
+		case currentCO == numberCOs:
+			status = "last"
+		default:
+			status = "middle"
+		}
+	}
+	return status
+}
+func checkIfMappedYet(typeC sam.CigarOpType, mappedStatus bool) bool {
+	if mappedStatus == false {
+		if typeC != sam.CigarSoftClipped && typeC != sam.CigarHardClipped {
+			mappedStatus = true
+		}
+	}
+	return mappedStatus
 }
