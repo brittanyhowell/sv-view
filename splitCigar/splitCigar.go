@@ -115,11 +115,20 @@ func main() {
 			lenC := co.Len()
 
 			mapped = checkIfMappedYet(typeC, mapped)
-
+			if typeC == sam.CigarHardClipped {
+				// I don't want to plot Hard Clipped.
+				continue
+			}
 			// adjust r.Pos if first value is soft clipped
 			if typeC == sam.CigarSoftClipped && mapped == false {
 				start = r.start - lenC
 				end = r.start
+			} else if cStatus == "first" || cStatus == "single" {
+				start = r.start
+				end = start + lenC - 1
+			} else {
+				start = end + 1
+				end = start + lenC - 1
 			}
 			//%v\t%v\t%v\t%v\t%v\t%v\t
 
