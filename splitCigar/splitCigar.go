@@ -72,10 +72,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	seconds := 0 // Number of secondary alignments
-
 	for _, rIn := range readIn {
-
+		seconds := 0 // Number of secondary alignments
 		// Set information.
 		r := constructAStruct(rIn)
 
@@ -130,27 +128,52 @@ func main() {
 				start = end + 1
 				end = start + lenC - 1
 			}
-			//%v\t%v\t%v\t%v\t%v\t%v\t
 
-			fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
-				// r.name,
-				start,
-				end,
-				// r.width,
-				// r.bin,
-				// r.mScore,
-				mate,
-				aScore,
+			fmt.Fprintf(out, "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n",
+				r.name, // read ID
+				start,  // cigar op coordinate
+				end,    // cigar op coordinate
+				// r.width, // total length of segment
+				r.bin,    // Height for plotting
+				r.mScore, // mapping quality
+				mate,     // mate one or two
+				aScore,   // alignment score
 				// r.tlen,
-				// numCO,
-				cStatus,
-				r.cigar,
-				typeC,
-				lenC,
+				seconds, // If it is a secondary alignment, will be 1
+				// cStatus, // first, single, middle, last
+				r.cigar, // cigar string
+				typeC,   // operator
+				lenC,    // length of operator
 			)
 
 			cCurrent++
 		}
+		// start = end + 1
+		// end = start + r.tlen
+		// if mate == "one" {
+		// 	fmt.Printf("%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\tTEMPLATE\tTEMPLATE\n",
+		// 		r.name,
+		// 		start,
+		// 		end,
+		// 		r.width,
+		// 		r.bin,
+		// 		r.mScore,
+		// 		mate,
+		// 		aScore,
+		// 		r.tlen,
+		// 		numCO,
+		// 		// cStatus,
+		// 		r.cigar,
+		// 		// typeC,
+		// 		// lenC,
+		// 	)
+		// 	// COME BACK AND CHECK TO SEE WHAT TLEN ACTUALLY IS BEFORE YOU USE IT.
+		// 	// I THINK I MAY HAVE MESSED UP
+		// 	//I THINK I NEEDED TO FIND A WAY TO MAKE MATES FIND EACH OTHER.
+		// 	// BUT I DON'T KNOW HOW TO DO THAT
+		// 	// I DON'T KNOW IF THEIR IDs ARE SUPPOSED TO BE THE SAME
+		// 	// I DON'T KNOW IF
+		// }
 
 	}
 
