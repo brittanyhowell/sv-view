@@ -15,7 +15,7 @@ library(IRanges)
 
 # Read input  
   reads <- read.table(file.full, sep = "\t")
-  colnames(reads) <- c("name", "chr","start","end","cigar","mapq","AS","flags")
+  colnames(reads) <- c("name", "chr","start","end","tlen","cigar","mapq","AS","flags")
 
 ## Not currently needed but I want to remember how to do this
 # sample.name <- strsplit(file.read, "-")[[1]][1]
@@ -34,10 +34,11 @@ library(IRanges)
   intervals <- NULL
 
 # Bind together table
-  full.table <- cbind(reads$name, bin.dat,reads$cigar, reads$mapq,reads$AS, reads$flags)
+  full.table <- cbind(reads$name, bin.dat,reads$cigar, reads$mapq,reads$AS, reads$flags,reads$tlen)
   reads <- NULL
   bin.dat <- NULL
-  colnames(full.table) <- c("name","start", "end", "width", "bin","cigar", "mapq","AS", "flags")
+  colnames(full.table) <- c("name","start", "end", "width", "bin","cigar", "mapq","AS", "flags","tlen")
 
 # Save table
   write.table(full.table,out.Table, quote=F, row.names=F,  sep="\t")
+  
