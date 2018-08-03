@@ -13,16 +13,17 @@ import (
 )
 
 type binnedReadsTable struct {
-	name   string
-	start  int
-	end    int
-	width  int
-	bin    string
-	cigar  sam.Cigar
-	mScore string
-	aScore string
-	flags  string
-	tlen   int
+	name      string
+	start     int
+	end       int
+	width     int
+	bin       string
+	cigar     sam.Cigar
+	mScore    string
+	aScore    string
+	flags     string
+	tlen      int
+	Partnered bool
 }
 
 func main() {
@@ -30,6 +31,10 @@ func main() {
 		binFile string
 		outPath string
 		outFile string
+		// partnered int
+		// solo      int
+		readNum int
+		r       binnedReadsTable
 	)
 
 	// For reference,
@@ -73,9 +78,10 @@ func main() {
 	}
 
 	for _, rIn := range readIn {
+		readNum++
 		seconds := 0 // Number of secondary alignments
 		// Set information.
-		r := constructAStruct(rIn)
+		r = constructAStruct(rIn)
 
 		flags := r.flags
 		paired, mateOne, mateTwo, sAlign := getMateInformation(flags)
@@ -91,6 +97,45 @@ func main() {
 
 		// Change the Alignment score formatting
 		aScore := strings.Replace(r.aScore, "AS:i:", "", -1) // -1 so it replaces all instances
+
+		// // RANGE OVER READIN AGAIN, AND FIND THE SECOND READS
+		// There is a way to do this I know there is.
+
+		// In the readBamChunks file, generate a list of read names in a separate for loop before the main one. Append this list to a variable.
+		// Read through reads as per normal. Each read, loop through this list of names, and determine partnered or not partnered (same ID, different mate), assign "partnered" bool
+		// Write two files. One: Constructs, Two: Reads
+		// To make reads, read the chunks, print the reads to a file. Append the names, coordinates and mate statuses of each read to a variable - listReads
+		// To make constructs: Loop through reads as before. Loop through listReads, search for ljne with same ID, different mate status. success -> partnered field in listReads = true
+		// Loop through listReads. 1) if it is partnered and also mate one: set start to be start of R1
+		// Loop through listReads, find same ID, mate two . Set end to be end of R2.
+		// 2) if partnered and mate two: SKIP
+		// 3) if not partnered: start = start, end = end
+		// In all cases, print to the file binReference File.
+		// Feed binReferenceFile into R and get a column appended that is the bin values
+		// Read in the binnedReference file, and the list of reads
+		// Process the cigar string as in this file, and for each read, loop through the binnedReferenceFile, and collect the bin value.
+
+		// for _, qIn := range readIn {
+
+		// 	q := constructAStruct(qIn)
+
+		// 	Qflags := q.flags
+		// 	Qpaired, QmateOne, QmateTwo, QsAlign := getMateInformation(Qflags)
+		// 	Qmate := getMateNumber(QmateOne, QmateTwo)
+
+		// 	// Quality checks
+		// 	if QsAlign == "_" {
+		// 		seconds++
+		// 	}
+		// 	if Qpaired != "p" {
+		// 		fmt.Println("Read unpaired..SOEMTHINGSEIHPWWRTRROOOOONNGGGGG", r.name)
+		// 	}
+		// 	if r.name == q.name && Qmate != mate {
+		// 		// fmt.Println(q.name, Qmate, r.name, mate)
+		// 		partnered++
+		// 		r.Partnered = true
+		// 	}
+		// }
 
 		// Count the number of cigar operators, crudely
 		numCO := countCigarOps(r.cigar)
@@ -176,7 +221,8 @@ func main() {
 		// }
 
 	}
-
+	// fmt.Println(r.Partnered)
+	// fmt.Println(readNum, solo, partnered)
 }
 func constructAStruct(lineIn string) binnedReadsTable {
 
