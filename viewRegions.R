@@ -5,6 +5,7 @@ library(grid)
 library(ggvis)
 library(plyr)
 require(zoo)
+library(grid)
 
 file.dir <- "/Users/bh10/Documents/Rotations/Rotation3/data/testView/splitTables"
 file.read <- "EGAN00001214492-homDel-CNV_chr1_86644_90107-split.txt"
@@ -21,52 +22,63 @@ sv.chr <- strsplit(name.sv, "_")[[1]][2]
 sv.start <- as.integer(strsplit(name.sv, "_")[[1]][3])
 sv.end <- as.integer(strsplit(name.sv, "_")[[1]][4])
 
-sv.start.round <- round_any(sv.start,1000,f = floor)               
+sv.start.round <- round_any(sv.start,1000,f = floor)   ## Gets nice lower coordinate for the plots            
 
+colType <- c("darkturquoise", "orange", "royalblue3", "salmon") ## Could change these based on type if you get keen, future brie
 
 records <- read.table(file.full, sep = "\t")
 colnames(records) <- c("name","start","end","bin","mapq","mate","AS", "secondary","cigar","operator","len")
 
+## Viewport: Bottom
+vp.Bottom <- viewport(height=unit(.5, "npc"), width=unit(1, "npc"), 
+                      just=c("left","top"), 
+                      y=0.5, x=0)
 
 
-# Process as IRanges
+# Process intervals as IRanges
 start = records$start
 end = records$end
 intervals <- IRanges(start = start, end = end)
 
-
-# ggplot - stacked bar plot
-# pdf()
-
-# print(
-  ggplot(records) + 
-  geom_rect(aes(xmin = start, xmax = end,
-                ymax =bin+0.9, ymin = bin, alpha = mapq,fill = operator))+ 
-  guides(alpha=guide_legend(title="Opacity:\nMapping\nQuality"),fill=guide_legend(title="Colour:\ncigar\nOperator")) +
-  scale_x_continuous(limits = c(sv.start.round-2000, sv.end+2000)) +
-  theme_bw() +
-  #theme(legend.position = c(.9, .9))  +
-  geom_segment(aes(x = sv.start, y = 0, xend = sv.end, yend = 0), colour = "maroon", size=4) +
-  scale_fill_manual(values=c( "maroon", "purple", "cornflowerblue", "black")) + 
-  xlab("genomic coordinate (bp)") +
-  ylab("") +
-  ggtitle(file.name)
-# )
-
-
 cov <- coverage(intervals)
-r <- runmean(cov, 50)
+cov.smooth <- runmean(cov, 25) ## Average over 50bp
 
-# dat.cov <- as.data.frame(cov)
 
-# smooth.cov <- rollapply(cov, width = 1000, by = 1000, FUN = mean, align = "left")
 
-pdf(file="/Users/bh10/Documents/Rotations/Rotation3/data/testView/cov_50.pdf", width = 15, height = 5)
-plot(r,type = "l", main=file.read, xlim = c(84000, 92100),panel.first={
-  # plot(x=records$start,y=records$mapq, main=file.read,xlim = c(84000, 92100),panel.first={
-  grid( col ="gray88") 
-}, xlab = "",ylab= "", las=1)
-segments(86644,0,90107,0,col ="maroon",lwd=6) # plot the SV coordinates
+# stacked bar plot
+p <-  ggplot(records) +
+    geom_rect(aes(xmin = start, xmax = end,
+                  ymax =bin+0.9, ymin = bin, alpha = mapq,fill = operator))+ 
+    guides(alpha=guide_legend(title="Opacity:\nMapping\nQuality",ncol=4),fill=guide_legend(title="Colour:\ncigar\nOperator",ncol=2))  +
+    scale_x_continuous(limits = c(sv.start.round-2000, sv.end+2000)) +
+    theme_bw() +
+    #theme(legend.position = c(.9, .9))  +
+    geom_segment(aes(x = sv.start, y = 0, xend = sv.end, yend = 0), colour = "maroon", size=3) +
+    scale_fill_manual(values=colType) + 
+    xlab("genomic coordinate (bp)") +
+    ylab("") +
+    # theme(legend.position = c(.9, .9))+
+  theme(legend.position="bottom")
+
+
+## Print the plot
+  
+pdf(file="/Users/bh10/Documents/Rotations/Rotation3/data/testView/test_combination.pdf", width = 15, height = 10)
+   
+
+  par(mfrow=c(2,1))
+  par(mar=c(3,2.5,4,1)+.1) # bottom, left, top, and right.
+
+  plot(cov.smooth,type = "l",
+  # plot(x=records$start,y=records$mapq, 
+       main=paste(sample.name,type.sv,name.sv,sep=" "),
+       xlim = c(sv.start.round-2000,  sv.end+2000),
+       panel.first={ grid( col ="gray88")  }, 
+       xlab = "",ylab= "", las=1)
+    segments(sv.start,0,sv.end,0,col ="maroon",lwd=6) # plot the SV coordinates
+  
+  # Print the stacked bar plot
+  print(p, vp=vp.Bottom)  
 graphics.off()
 
 
