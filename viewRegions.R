@@ -4,6 +4,7 @@ library(ggplot2)
 library(grid)
 library(ggvis)
 library(plyr)
+require(zoo)
 
 file.dir <- "/Users/bh10/Documents/Rotations/Rotation3/data/testView/splitTables"
 file.read <- "EGAN00001214492-homDel-CNV_chr1_86644_90107-split.txt"
@@ -29,13 +30,16 @@ colnames(records) <- c("name","start","end","bin","mapq","mate","AS", "secondary
 
 
 # Process as IRanges
-start = reads$start
-end = reads$end
+start = records$start
+end = records$end
 intervals <- IRanges(start = start, end = end)
 
 
 # ggplot - stacked bar plot
-ggplot(records) + 
+# pdf()
+
+# print(
+  ggplot(records) + 
   geom_rect(aes(xmin = start, xmax = end,
                 ymax =bin+0.9, ymin = bin, alpha = mapq,fill = operator))+ 
   guides(alpha=guide_legend(title="Opacity:\nMapping\nQuality"),fill=guide_legend(title="Colour:\ncigar\nOperator")) +
@@ -47,7 +51,22 @@ ggplot(records) +
   xlab("genomic coordinate (bp)") +
   ylab("") +
   ggtitle(file.name)
-  # Change segment to start and end values
+# )
 
+
+cov <- coverage(intervals)
+r <- runmean(cov, 50)
+
+# dat.cov <- as.data.frame(cov)
+
+# smooth.cov <- rollapply(cov, width = 1000, by = 1000, FUN = mean, align = "left")
+
+pdf(file="/Users/bh10/Documents/Rotations/Rotation3/data/testView/cov_50.pdf", width = 15, height = 5)
+plot(r,type = "l", main=file.read, xlim = c(84000, 92100),panel.first={
+  # plot(x=records$start,y=records$mapq, main=file.read,xlim = c(84000, 92100),panel.first={
+  grid( col ="gray88") 
+}, xlab = "",ylab= "", las=1)
+segments(86644,0,90107,0,col ="maroon",lwd=6) # plot the SV coordinates
+graphics.off()
 
 
