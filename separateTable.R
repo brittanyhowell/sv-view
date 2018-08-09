@@ -4,6 +4,24 @@
 # Type (CNV, discovery etc)
 # wk and out DIRs
 
+## Set flags
+option_list = list(
+  make_option(c("-d", "--inDIR"), type="character", default=NULL,
+              help="dataset file DIR", metavar="character"),
+  make_option(c("-f", "--inTab"), type="character", default=NULL,
+              help="dataset file name", metavar="character"),
+  make_option(c("-i", "--sample"), type="character", default=NULL,
+              help="dataset file DIR", metavar="character"),
+  make_option(c("-s", "--software"), type="character", default=NULL,
+              help="dataset file name", metavar="character"),
+  make_option(c("-o", "--outDIR"), type="character", default=NULL,
+              help="output DIR", metavar="character")
+);
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+
+
 
 
 # Interprets zygosity based on depth. 
@@ -22,21 +40,21 @@
   }
 
 # Directories
-wkDIR <- "/Users/bh10/Documents/Rotations/Rotation3/data/testView/"
-oDIR  <- "/Users/bh10/Documents/Rotations/Rotation3/data/testView/"
+wkDIR <- opt$inDIR
+oDIR  <- opt$outDIR
 
 # Sample name for file access, sans extension to name variables and outFiles
-inFile <- "GS_filtered_DEL_CNV.txt"             # Full table
+inFile <-   opt$inTab
 inFile.noext <- gsub(".txt", "", inFile)        
 tableFile <- paste(wkDIR,inFile, sep = "/")
 
-sample.name <- "EGAN00001214492"                # Sample name, no extensions
+sample.name <-  opt$sample               # Sample name, no extensions
 
 outTable.name <- paste(inFile.noext, sample.name, sep = "_")
 outTable.file.noext <- paste(oDIR, outTable.name, sep = "/")
 outTable.file <- paste (outTable.file.noext, ".txt", sep= "")
 
-inputType <- "CNV" # Options include CNV right now. # 
+inputType <- opt$software # Options include CNV right now. # 
 
 # Read full table
   full <- read.table(tableFile, header = T)
@@ -55,7 +73,7 @@ inputType <- "CNV" # Options include CNV right now. #
     converted <- as.data.frame(sapply(sample.bind[,6], CNVConvert))
   }
 
-  # Drop   
+  # Drop the numerical column and replace with column with names
   sample.bind <- sample.bind[,-6]
   colnames(converted) <- sample.name
   sample.bind <- cbind(sample.bind, converted)

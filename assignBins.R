@@ -1,27 +1,33 @@
 # Load
 library(IRanges)
 
+## Set flags
+option_list = list(
+  make_option(c("-d", "--inDIR"), type="character", default=NULL,
+              help="dataset file DIR", metavar="character"),
+  make_option(c("-f", "--inTab"), type="character", default=NULL,
+              help="dataset file name", metavar="character"),
+  make_option(c("-o", "--outDIR"), type="character", default=NULL,
+              help="output DIR", metavar="character")
+);
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+
+
 
 # Initiate input and output tables
-  file.dir <- "~/Documents/Rotations/Rotation3/data/testView/reads/"
-  file.read <- "EGAN00001214492-homDel-CNV_chr1_86644_90107-reads.txt"
+  file.dir <- opt$inDIR
+  file.read <- opt$inTab
   file.full <- paste(file.dir,file.read,sep = "/")
-  
-  
-  out.DIR <- "~/Documents/Rotations/Rotation3/data/testView/binnedTables"
-  out.File <- "EGAN00001214492-homDel-CNV_chr1_86644_90107-binned.txt"
+
+  out.DIR <- opt$outDIR
+  out.File <- gsub("reads","binned",file.read)   
   out.Table <- paste(out.DIR,out.File,sep = "/")
-    
 
 # Read input  
   reads <- read.table(file.full, sep = "\t")
   colnames(reads) <- c("name", "chr","start","end","tlen","cigar","mapq","AS","flags")
-
-## Not currently needed but I want to remember how to do this
-# sample.name <- strsplit(file.read, "-")[[1]][1]
-# type.sv <- strsplit(file.read, "-")[[1]][2]
-# name.sv <- strsplit(file.read, "-")[[1]][3]
-
 
 # Process as IRanges
   start = reads$start
