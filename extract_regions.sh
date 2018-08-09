@@ -12,8 +12,7 @@ software="CNV"
 scriptDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/scripts/
 # Folder for intervals: 
 intDIR="/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/intervals_${software}"
-# Folder for reads per interval
-svReadsDIR="/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/reads_${software}"
+
 
 
 # DIR for interval lists per sample
@@ -45,23 +44,52 @@ fi
     software=$software 
     # pass in relevant DIRs
 
-        # Run separate table to get summary table for sample
-        /software/R-3.4.0/bin/Rscript ${scriptDIR}/separateTable.R # enter arguments
+        STinDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/"
+        STinTab="GS_filtered_DEL_CNV.txt"
+        STsample=${sample}
+        SToutDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/"
+        STsoftware=${software}
 
-        # Run read extraction program to get folder of read files per SV
-        go run ${scriptDIR}/readBamChunks.go -index=/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam.bai -bam=/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam -intFile=smolInt.txt -outPath=${svReadsDIR} -sampleName=${sample}
+        /software/R-3.4.0/bin/Rscript ${scriptDIR}/separateTable.R   -f ${STinDIR} -d ${STinDIR} -i ${STsample} -o ${SToutDIR} -s ${STsoftware}
 
-        # sample for testing
-        # go run readBamChunks.go -index=/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam.bai -bam=/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam -intFile=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/GS_filtered_DEL_CNV_EGAN00001214492.txt -outPath=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/reads/ -sample="EGAN00001214492"
+        RBCindex="/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam.bai"
+        RBCbam="/lustre/scratch115/projects/interval_wgs/testBams/EGAN00001207556.bam"
+        RBCint="smolInt.txt"
+        RBCout="/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/reads_${software}"
+        RBCsampleName=${sample}
+
+        echo "running readBamChunks.go to get folder of read files per SV"
+        echo "go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam}
+         -intFile=${RBCint} -outPath=${RBCout} -sampleName=${RBCsampleName}"
+        
+        go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam}
+         -intFile=${RBCint} -outPath=${RBCout} -sampleName=${RBCsampleName}
+
+        ABinDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/reads/"
+        ABinTab="EGAN00001214492-homDel-CNV_chr1_86644_90107-reads.txt"
+        ABoutDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/binnedTables"
+
+        echo "running assignBins.R to assign the reads a height"
+        echo "Rscript assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}"
+
+        Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}
+
+        SCbinFile="/Users/bh10/Documents/Rotations/Rotation3/data/testView/binnedTables/EGAN00001214492-homDel-CNV_chr1_86644_90107-binned.txt"
+        SCoutDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/splitTables/"
+        SCoutFile="EGAN00001214492-homDel-CNV_chr1_86644_90107-split.txt"
+
+        echo "running splitCigar.go to expand the cigar strings"
+        echo "go run ${scriptDIR}/splitCigar/splitCigar.go -binFile=${SCbinFile} -outPath=${SCoutDIR} -outFile=${SCoutFile}"
+
+        go run ${scriptDIR}/splitCigar/splitCigar.go -binFile=${SCbinFile} -outPath=${SCoutDIR} -outFile=${SCoutFile}
 
 
+        VRinDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/splitTables/"
+        VRinTab="EGAN00001214492-homDel-CNV_chr1_86644_90107-split.txt"
+        VRoutDIR="/Users/bh10/Documents/Rotations/Rotation3/data/testView/cov_read_plots"
 
+        echo "running viewRegions.R to produce plots"
+        echo "Rscript viewRegions.R -d ${VRinDIR} -f ${VRinTab} -o ${VRoutDIR}"
+        Rscript ${scriptDIR}/viewRegions.R -d ${VRinDIR} -f ${VRinTab} -o ${VRoutDIR}
 
-
-
-    ## Look up coordinates of SV
-
-    chr=1
-    start=86643
-    end=90107
 
