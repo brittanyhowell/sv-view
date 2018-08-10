@@ -15,6 +15,8 @@ option_list = list(
   make_option(c("-s", "--software"), type="character", default=NULL,
               help="dataset file name", metavar="character"),
   make_option(c("-o", "--outDIR"), type="character", default=NULL,
+              help="output DIR", metavar="character"),
+  make_option(c("-w", "--whichSV"), type="character", default="all",
               help="output DIR", metavar="character")
 );
 opt_parser = OptionParser(option_list=option_list);
@@ -39,6 +41,9 @@ opt = parse_args(opt_parser);
     return(val)
   }
 
+# Which SVs to give
+whichSVs <- opt$whichSV
+  
 # Directories
 wkDIR <- opt$inDIR
 oDIR  <- opt$outDIR
@@ -75,7 +80,7 @@ inputType <- opt$software # Options include CNV right now. #
 
   # Drop the numerical column and replace with column with names
   sample.bind <- sample.bind[,-6]
-  colnames(converted) <- sample.name
+  colnames(converted) <- "type"
   sample.bind <- cbind(sample.bind, converted)
   converted <- NULL
 
@@ -87,6 +92,10 @@ inputType <- opt$software # Options include CNV right now. #
   sample.nochr <- NULL
 
   chr.convert <- NULL
+  
+  if (whichSVs=="noRef"){
+  sample.bind <-sample.bind[!(sample.bind$type =="ref"),]
+  }
   
 # Save to file
 write.table(sample.bind, outTable.file, quote=F, row.names=F,  sep="\t")
