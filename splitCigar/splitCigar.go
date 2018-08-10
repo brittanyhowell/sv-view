@@ -1,3 +1,5 @@
+//input: binned reads table, output has been expanded to one cigar record per line
+
 package main
 
 import (
@@ -30,7 +32,7 @@ func main() {
 	var (
 		binFile string
 		outPath string
-		outFile string
+		inDIR   string
 		// partnered int
 		// solo      int
 		readNum int
@@ -43,12 +45,14 @@ func main() {
 	//the third is default,
 	//the fourth is the description
 	flag.StringVar(&binFile, "binFile", "", "name of the file with read data & bin values")
+	flag.StringVar(&inDIR, "inDIR", "", "path to input DIR")
 	flag.StringVar(&outPath, "outPath", "", "path to output DIR")
-	flag.StringVar(&outFile, "outFile", "", "Name of output file")
 	flag.Parse()
 
 	fmt.Println("Begin the expansion!")
 
+	// Create output filename from input name
+	outFile := strings.Replace(binFile, "binned", "split", -1) // -1 so it replaces all instances
 	file := fmt.Sprintf("%v/%v", outPath, outFile)
 	out, err := os.Create(file)
 	if err != nil {
@@ -57,7 +61,8 @@ func main() {
 	defer out.Close()
 
 	// Read in the binned reads table
-	fIn, err := os.Open(binFile)
+	nameIn := fmt.Sprintf("%v/%v", inDIR, binFile)
+	fIn, err := os.Open(nameIn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,10 +93,10 @@ func main() {
 		mate := getMateNumber(mateOne, mateTwo)
 
 		// Quality checks
-		if sAlign == "_" {
+		if sAlign == "_" { // If secondary alignment
 			seconds++
 		}
-		if paired != "p" {
+		if paired != "p" { // if unpaired
 			fmt.Println("Read unpaired..SOEMTHINGSEIHPWWRTRROOOOONNGGGGG", r.name)
 		}
 
