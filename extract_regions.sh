@@ -78,22 +78,22 @@
 
 
         
-        ## Use raw GS table, separate out the relevant colums for the current sample. Can only have non-reference, or all.  
-        # made in the R script, rather than for an argument
-        stOutInterValTable="${STinTab%.txt}_${sample}.txt" 
+        # ## Use raw GS table, separate out the relevant colums for the current sample. Can only have non-reference, or all.  
+        # # made in the R script, rather than for an argument
+        # stOutInterValTable="${STinTab%.txt}_${sample}.txt" 
 
-        # File with original data
-        if [ -f ${STinDIR}/${STinTab} ]; then
-            echo "file $STinDIR exists ...continuing" 
-        else
-            echo "Folder $STinDIR does not exist ... exiting"     
-            exit
-        fi
+        # # File with original data
+        # if [ -f ${STinDIR}/${STinTab} ]; then
+        #     echo "file $STinDIR exists ...continuing" 
+        # else
+        #     echo "Folder $STinDIR does not exist ... exiting"     
+        #     exit
+        # fi
 
-            echo "running separateTable.R to pull out ${whichSVs} SVs from the original table"
-            echo "call: ${R_version}/Rscript ${scriptDIR}/separateTable.R    -f ${STinTab}      -d ${STinDIR}      -i ${sample}    -o ${SToutDIR}     -s ${software}    -w ${whichSVs}  "
+        #     echo "running separateTable.R to pull out ${whichSVs} SVs from the original table"
+        #     echo "call: ${R_version}/Rscript ${scriptDIR}/separateTable.R    -f ${STinTab}      -d ${STinDIR}      -i ${sample}    -o ${SToutDIR}     -s ${software}    -w ${whichSVs}  "
             
-            ${R_version}/Rscript ${scriptDIR}/separateTable.R    --inTab=${STinTab}      -d ${STinDIR}      -i ${sample}    -o ${SToutDIR}     -s ${software}    -w ${whichSVs}   
+        #     ${R_version}/Rscript ${scriptDIR}/separateTable.R    --inTab=${STinTab}      -d ${STinDIR}      -i ${sample}    -o ${SToutDIR}     -s ${software}    -w ${whichSVs}   
 
         # ## Retrieve list of intervals for the sample from SToutDIR and withdraw the reads
         # ## Put output in RBCout/sample
@@ -108,24 +108,23 @@
         #     echo "Call: ${go_version}/go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam}
         #     -intFile=${RBCint} -outPath=${RBCout} -sampleName=${RBCsampleName}"
             
-        #     ${go_version}/go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam}
-        #     -intFile=${RBCint} -outPath=${RBCout} -sampleName=${RBCsampleName}
+        #     ${go_version}/go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam} -intFile=${RBCint} -outPath=${RBCoutDIR} -sample=${RBCsampleName}
 
 
-        # ## Retrieve list of read tables from RBCout and assign them a bin value
-        # ## Put output in ABoutDIR/sample
+        ## Retrieve list of read tables from RBCout and assign them a bin value
+        ## Put output in ABoutDIR/sample
 
-        #     ABinDIR=${RBCout}
-        #     listReads=$(ls ${ABinDIR}/*.txt)
+            ABinDIR=${RBCoutDIR}
+            listReads=$(ls ${ABinDIR}/*.txt)
 
-        #     for readTable in ${listReads} ; do 
-        #         ABinTab=${readTable}
+            for readTable in ${listReads} ; do 
+                ABinTab=${readTable}
 
-        #         echo "running assignBins.R to assign the reads a height for ${ABinTab}"
-        #         echo "Call: ${R_version}/Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}
+                echo "running assignBins.R to assign the reads a height for ${ABinTab}"
+                echo "Call: ${R_version}/Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}"
 
-        #         ${R_version}/Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}
-        #     done
+                ${R_version}/Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}
+            done
 
         # ## Retrieve binned tables from ABoutDIR and split the records into their cigar constituents
         # ## Put output in SCoutDIR/sample
