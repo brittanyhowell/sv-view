@@ -4,6 +4,8 @@
 # Make files per sample
 # add a reporting thing, to count how many SVs of each type in the CNV thing. please. 
 
+# Maybe it's better to make a folder per sample, work in there, and then at the end, move the plots into a directory with all samples. 
+
 
 ##Extract specified regions from bamfile
 
@@ -16,15 +18,18 @@
 
 ## IniTiALisE
 
-    # Scripts and junk
-    scriptDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/scripts/
-    wkDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/viewSV-out/
-
     # Raw inputs
     bamDIR=/lustre/scratch115/projects/interval_wgs/testBams/
     STinDIR=/Users/bh10/Documents/Rotations/Rotation3/data/testView/
-    sample="EGAN00001214492" ## Submit a job array per sample, please Brie
+    STinTab="GS_filtered_DEL_CNV.txt"                                   ## Name of the raw table
+    sample="EGAN00001214492" 
 
+
+    # Scripts and junk
+    scriptDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/scripts/
+    # wkDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/viewSV-out/
+    wkDIR="/Users/bh10/Documents/testView/aug13"
+    
     # settings
     software="CNV" 
     whichSVs="refOnly" # options include "noRef" or "all" (actually right now it's noRef or nothing..)
@@ -37,33 +42,33 @@
     ## This statement will delete EVERYTHING, and will replace it with new ones. 
 
     # The root folder. 
-        if [ -d ${wkDIR} ]; then
-            echo "your directory ${wkDIR} already existed.... ...I have replaced it. All." 
-            rm -rf ${wkDIR}
-            mkdir ${wkDIR}
+        if [ -d "${wkDIR}_${sample}" ]; then
+            echo "your directory ${wkDIR}_${sample} already existed.... ...I have replaced it. All." 
+            rm -rf "${wkDIR}_${sample}"
+            mkdir -p "${wkDIR}_${sample}"
         else
-            mkdir ${wkDIR}
-            echo "Folder ${wkDIR} didn't exist ... creating it for you!"
+            mkdir -p "${wkDIR}_${sample}"
+            echo "Folder ${wkDIR}_${sample} didn't exist ... creating it for you!"
         fi
         
     #### Make the output tables: 
    
         # separateTable.R - makes one SV coord table per sample
-            SToutDIR="${wkDIR}/${software}-raw_tables"
+            SToutDIR="${wkDIR}_${sample}/${software}-raw_tables"
         # readBamChunks.go - makes one file of reads per SV, per sample
-            RBCoutDIR="${wkDIR}/${software}-reads"
+            RBCoutDIR="${wkDIR}_${sample}/${software}-reads"
         # assignBins.R - gives reads height for a plot
-            ABoutDIR="${wkDIR}/${software}-binned"
+            ABoutDIR="${wkDIR}_${sample}/${software}-binned"
         # splitCigar - splits constructs into cigar constituents
-            SCoutDIR="${wkDIR}/${software}-cigar_split"
+            SCoutDIR="${wkDIR}_${sample}/${software}-cigar_split"
         # viewRegions - makes the plots. 
-            VRoutDIR="${wkDIR}/${software}-plots"
+            VRoutDIR="${wkDIR}_${sample}/${software}-plots"
 
-            mkdir ${SToutDIR}
-            mkdir ${RBCoutDIR}
-            mkdir ${ABoutDIR}
-            mkdir ${SCoutDIR}
-            mkdir ${VRoutDIR}
+            mkdir -p ${SToutDIR}
+            mkdir -p ${RBCoutDIR}
+            mkdir -p ${ABoutDIR}
+            mkdir -p ${SCoutDIR}
+            mkdir -p ${VRoutDIR}
 
 
         
@@ -71,7 +76,6 @@
 
 
         STinDIR=${rawTabDIR}  ## Where the raw table is
-        STinTab="GS_filtered_DEL_CNV.txt"                                   ## Name of the raw table
         STsample=${sample}
         STsoftware=${software}
         # made in the R script, rather than for an argument
