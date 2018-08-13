@@ -1,8 +1,5 @@
-# Args:  
-# Full table name
-# Sample name
-# Type (CNV, discovery etc)
-# wk and out DIRs
+library('optparse')
+
 
 ## Set flags
 option_list = list(
@@ -48,9 +45,9 @@ whichSVs <- opt$whichSV
 wkDIR <- opt$inDIR
 oDIR  <- opt$outDIR
 
-# Sample name for file access, sans extension to name variables and outFiles
-inFile <-   opt$inTab
-inFile.noext <- gsub(".txt", "", inFile)        
+# Raw table
+inFile <-   opt$inTab 
+inFile.noext <- gsub(".txt", "", inFile) 
 tableFile <- paste(wkDIR,inFile, sep = "/")
 
 sample.name <-  opt$sample               # Sample name, no extensions
@@ -84,12 +81,12 @@ inputType <- opt$software # Options include CNV right now. #
   sample.bind <- cbind(sample.bind, converted)
   converted <- NULL
 
-  # Replace 1 with chr1
-  chr.convert <-  as.data.frame(sapply(sample.bind$chr,function(x) paste("chr",x,sep = "")))
-  colnames(chr.convert) <- "chr"
-  sample.nochr <- sample.bind[,-1]
-  sample.bind <- cbind(chr.convert,sample.nochr)
-  sample.nochr <- NULL
+  # # Replace 1 with chr1
+  # chr.convert <-  as.data.frame(sapply(sample.bind$chr,function(x) paste("chr",x,sep = "")))
+  # colnames(chr.convert) <- "chr"
+  # sample.nochr <- sample.bind[,-1]
+  # sample.bind <- cbind(chr.convert,sample.nochr)
+  # sample.nochr <- NULL
 
   chr.convert <- NULL
   
