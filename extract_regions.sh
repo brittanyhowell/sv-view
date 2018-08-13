@@ -29,6 +29,8 @@
     scriptDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/scripts/
     # wkDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/viewSV-out/
     wkDIR="/Users/bh10/Documents/testView/aug13"
+    plotDIR="${wkDIR}/plots/${sample}"
+    mkdir -p ${plotDIR}
     
     # settings
     software="CNV" 
