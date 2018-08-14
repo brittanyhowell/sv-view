@@ -1,5 +1,7 @@
 # Load
-library(IRanges)
+suppressPackageStartupMessages(library(IRanges))
+suppressPackageStartupMessages(library('optparse'))
+
 
 ## Set flags
 option_list = list(
