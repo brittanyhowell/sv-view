@@ -130,7 +130,7 @@ func main() {
 		outName = fmt.Sprintf("%v-%v-%v-reads.txt", sampleName, sv.TypeofSV, sv.Name)
 
 		// Creating single file for the current output SV
-		file := fmt.Sprintf("%v%v", outPath, outName)
+		file := fmt.Sprintf("%v/%v", outPath, outName)
 		out, err := os.Create(file)
 		if err != nil {
 			log.Fatalf("failed to create out %s: %v", file, err)
@@ -150,6 +150,7 @@ func main() {
 		i, err := bam.NewIterator(br, chunks)
 		if err != nil {
 			log.Fatal(err)
+			fmt.Println("error: in the iterator there are issues")
 		}
 
 		// iterate over reads - print to file
