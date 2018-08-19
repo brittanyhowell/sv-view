@@ -1,12 +1,12 @@
 # Load
-library(IRanges)
-library(ggplot2)
-library(grid)
-library(ggvis)
-library(plyr)
-library(zoo)
-library(grid)
-library(optparse)
+suppressPackageStartupMessages(library(IRanges))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(grid))
+# suppressPackageStartupMessages(library(ggvis))
+suppressPackageStartupMessages(library(plyr))
+# suppressPackageStartupMessages(library(zoo))
+suppressPackageStartupMessages(library(grid))
+suppressPackageStartupMessages(library(optparse))
 
 ## Set flags
   option_list = list(
@@ -67,7 +67,7 @@ library(optparse)
   intervals <- IRanges(start = start, end = end)
   
   cov <- coverage(intervals)
-  cov.smooth <- runmean(cov, 25) ## Average over 50bp
+  cov.smooth <- runmean(cov, 100) ## Average over 50bp
   
 # save the stacked bar plot
   p <-   ggplot(records) +
@@ -97,11 +97,15 @@ library(optparse)
          panel.first={ grid( col ="gray88")  }, 
          xlab = "",ylab= "", las=1)
       segments(sv.start,0,sv.end,0,col ="maroon",lwd=6) # plot the SV coordinates
-    
+      
     ## Print the stacked bar plot on the bottom
     print(p, vp=vp.Bottom)  
+  # dev.off()
   graphics.off()
+  
+  cov.smooth <- NULL
   
 
 print(paste("Complete",name.sv,sep=" "))
+gc(TRUE)
 
