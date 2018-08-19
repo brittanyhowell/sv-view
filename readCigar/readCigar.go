@@ -47,12 +47,12 @@ func main() {
 
 	var intAll []string
 	sInt := bufio.NewScanner(fInt)
-
+	// iInt := 0
 	for sInt.Scan() {
-		// if i > 0 { // IMPORTANT - ASSUMES THERE IS A HEADER, ELSE IT WILL SKIP THE FIRST SV
+		// if iInt > 0 { // IMPORTANT - ASSUMES THERE IS A HEADER, ELSE IT WILL SKIP THE FIRST SV
 		intAll = append(intAll, sInt.Text())
 		// }
-		// i++
+		// iInt++
 	}
 	if err := sInt.Err(); err != nil {
 		log.Fatal(err)
@@ -91,7 +91,7 @@ func main() {
 	if err != nil {
 		fmt.Println("failed to read chunks: ", berr)
 		os.Exit(10)
-		// You know, I still don't know if this code is user defined.
+		// You know, I still don't know if this error code is user defined.
 		// I'm pretty sure it is. I mean, I could put any number there
 		// And it would print it, and then in my documentation, I could write
 		// yeah, exit code x means THIS.
