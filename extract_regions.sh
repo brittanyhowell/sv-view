@@ -165,6 +165,12 @@
         echo "removing split tables DIR: ${SCoutDIR}"
         rm -r ${SCoutDIR}
 
+        
+
+        echo "zipping and moving plots DIR ${plotDIR}"
+        mv ${VRoutDIR}/* ${plotDIR}
+        gzip ${plotDIR}
+
         echo "complete, exiting"
 
 
