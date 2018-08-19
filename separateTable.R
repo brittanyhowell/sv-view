@@ -92,6 +92,7 @@ inputType <- opt$software # Options include CNV right now. #
   
   if (whichSVs=="noRef"){
   sample.bind <-sample.bind[!(sample.bind$type =="ref"),]
+  print(paste("whichSV:",whichSVs,sep=""))
   }
   
 # Save to file
