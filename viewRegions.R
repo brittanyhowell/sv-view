@@ -14,6 +14,8 @@ suppressPackageStartupMessages(library(optparse))
                 help="dataset file DIR", metavar="character"),
     make_option(c("-f", "--inTab"), type="character", default=NULL,
                 help="dataset file name", metavar="character"),
+    make_option(c("-s", "--inSW"), type="character", default=NULL,
+                help="software used as caller", metavar="character"),
     make_option(c("-o", "--outDIR"), type="character", default=NULL,
                 help="output DIR", metavar="character")
   );
@@ -23,6 +25,7 @@ suppressPackageStartupMessages(library(optparse))
 ## Declare variables
  
   print("declaring variables")
+  software <- opt$inSW
   file.dir <- opt$inDIR
   file.read <- opt$inTab
   file.full <- paste(file.dir,file.read,sep = "/")
@@ -37,10 +40,16 @@ suppressPackageStartupMessages(library(optparse))
   type.sv <- strsplit(file.name, "-")[[1]][2]
   name.sv <- strsplit(file.name, "-")[[1]][3]
   
+  if (software=="CNV"){
   sv.software <- strsplit(name.sv, "_")[[1]][1]
   sv.chr <- strsplit(name.sv, "_")[[1]][2]
   sv.start <- as.integer(strsplit(name.sv, "_")[[1]][3])
   sv.end <- as.integer(strsplit(name.sv, "_")[[1]][4])
+  } else if (software =="discovery" ) {
+    sv.chr <- strsplit(name.sv, "_")[[1]][1]
+    sv.start <- as.integer(strsplit(name.sv, "_")[[1]][2])
+    sv.end <- as.integer(strsplit(name.sv, "_")[[1]][3])
+  }
 
 # Gets nice lower coordinate for the plots            
   sv.start.round <- round_any(sv.start,1000,f = floor)   
@@ -105,8 +114,7 @@ suppressPackageStartupMessages(library(optparse))
   graphics.off()
   
   cov.smooth <- NULL
-  
 
-print(paste("Complete",name.sv,"at",Sys.time(),sep=" "))
 gc(TRUE)
+print(paste("Complete",name.sv,"at",Sys.time(),sep=" "))
 
