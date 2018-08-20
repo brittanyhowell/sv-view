@@ -22,7 +22,7 @@ opt = parse_args(opt_parser);
 
 
 
-
+# GenomeSTRiP CNV Pipeline
 # Interprets zygosity based on depth. 
 # 0 = no reads hence deletion etc. 
   CNVConvert <- function(x) {
@@ -37,6 +37,22 @@ opt = parse_args(opt_parser);
     }
     return(val)
   }
+
+# Genome STRiP discovery Pipeline
+# Interprets zygosity based on Read Pair analysis
+# 0/0 is ref, 0/1 is hetDel etc. 
+DISCConvert <- function(x) {
+  if (x == "0/0") {
+    val <- "ref"
+  } else if (x == "0/1" || x == "1/0"){
+    val <- "hetDel"
+  } else if (x == "1/1"){
+    val <- "homDel"
+  } else if (x == "."){
+    val <- "missing"
+  }
+  return(val)
+} # What is a duplication? Are there other things?
 
 # Which SVs to give
 whichSVs <- opt$whichSV
@@ -73,7 +89,10 @@ inputType <- opt$software # Options include CNV right now. #
 # Needs changing, because this is currently set up for the CNV data and nothing else..
   if (inputType=="CNV"){
     converted <- as.data.frame(sapply(sample.bind[,6], CNVConvert))
+  } else if (inputType=="discovery"){
+    converted <- as.data.frame(sapply(sample.bind[,6], DISCConvert))
   }
+  
 
   # Drop the numerical column and replace with column with names
   sample.bind <- sample.bind[,-6]
@@ -93,6 +112,8 @@ inputType <- opt$software # Options include CNV right now. #
   if (whichSVs=="noRef"){
   sample.bind <-sample.bind[!(sample.bind$type =="ref"),]
   print(paste("whichSV:",whichSVs,sep=""))
+  } else if  (whichSVs=="delsAndDups"){
+    sample.bind <-sample.bind[(sample.bind$type =="hetDel" | sample.bind$type =="homDel" | sample.bind$type =="Dup"),] 
   }
   
 # Save to file
