@@ -127,7 +127,7 @@ func main() {
 		}
 		//print the intervals
 		fmt.Printf("Interval: %v\t%v\t%v\t%v\t%v\t%v\n", sv.Chr, sv.Start, sv.End, sv.Name, sv.Length, sv.TypeofSV)
-		outName = fmt.Sprintf("%v-%v-%v-reads.txt", sampleName, sv.TypeofSV, sv.Name)
+		outName = fmt.Sprintf("%v-%v-%v_%v_%v-reads.txt", sampleName, sv.TypeofSV, sv.Chr, sv.Start, sv.End)
 
 		// Creating single file for the current output SV
 		file := fmt.Sprintf("%v/%v", outPath, outName)
