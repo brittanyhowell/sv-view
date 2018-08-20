@@ -21,6 +21,7 @@ suppressPackageStartupMessages(library(optparse))
   opt = parse_args(opt_parser);
 
 ## Declare variables
+ 
   print("declaring variables")
   file.dir <- opt$inDIR
   file.read <- opt$inTab
@@ -54,7 +55,7 @@ suppressPackageStartupMessages(library(optparse))
 
   
 ## Read input table
-  print("reading input table")
+  print(paste("Begin reading for",name.sv,"at",Sys.time(),sep=" "))
   records <- read.table(file.full, sep = "\t")
   colnames(records) <- c("name","start","end","bin","mapq","mate","AS", "secondary","cigar","operator","len")
 
@@ -67,7 +68,7 @@ suppressPackageStartupMessages(library(optparse))
   intervals <- IRanges(start = start, end = end)
   
   cov <- coverage(intervals)
-  cov.smooth <- runmean(cov, 100) ## Average over 50bp
+  cov.smooth <- runmean(cov, 150) ## Average over x bp
   
 # save the stacked bar plot
   p <-   ggplot(records) +
@@ -106,6 +107,6 @@ suppressPackageStartupMessages(library(optparse))
   cov.smooth <- NULL
   
 
-print(paste("Complete",name.sv,sep=" "))
+print(paste("Complete",name.sv,"at",Sys.time(),sep=" "))
 gc(TRUE)
 
