@@ -142,8 +142,8 @@ func main() {
 
 		// set chunks - based on intervals
 		// However, we would like the chunks to include reads on either side of the element, So we are going to adjust the values a bit.
-		startchunk := sv.Start - 1500
-		endchunk := sv.End + 1500
+		startchunk := sv.Start - 2500
+		endchunk := sv.End + 2500
 		chunks, err := bai.Chunks(refs[sv.Chr], startchunk, endchunk)
 		if err != nil {
 			fmt.Println(chunks, err)
