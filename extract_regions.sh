@@ -116,8 +116,8 @@
             ${go_version}/go run ${scriptDIR}/readBamChunks/readBamChunks.go -index=${RBCindex} -bam=${RBCbam} -intFile=${RBCint} -outPath=${RBCoutDIR} -sample=${RBCsampleName}
 
 
-        # Retrieve list of read tables from RBCout and assign them a bin value
-        # Put output in ABoutDIR/sample
+        ## Retrieve list of read tables from RBCout and assign them a bin value
+        ## Put output in ABoutDIR/sample
 
             ABinDIR=${RBCoutDIR}
             cd ${ABinDIR}
@@ -153,8 +153,8 @@
         echo "removing binned tables DIR: ${ABoutDIR}"
         rm -r ${ABoutDIR}
 
-        Retrieve split tables from SCoutDIR and plot them. 
-        Put output in VRoutDIR/sample
+        ## Retrieve split tables from SCoutDIR and plot them. 
+        ## Put output in VRoutDIR/sample
 
             VRinDIR=${SCoutDIR}                         ## source files in SC outDIR
             cd ${VRinDIR}
