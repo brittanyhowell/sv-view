@@ -21,11 +21,11 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
    Input: results table from either Genome STRiP pipeline  
    Output: Coordinates of SVs for each sample and zygosity of SV (ref/het/hom/duplication)
 
-```bash
+    ```bash
     chr     start   stop    ID              len     type
     chr1    1288120 1289853 DEL_P0001_56    1317    hetDel
     chr1    1934917 1935701 DEL_P0001_156   782     hetDel
-```
+    ```
 
 1. [readBamChunks.go](https://github.com/brittanyhowell/sv-view/blob/master/readBamChunks/readBamChunks.go)
 
