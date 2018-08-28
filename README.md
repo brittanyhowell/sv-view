@@ -1,5 +1,11 @@
 # Viewing SVs at a read level
 
+## Example plot:
+
+Homozygous deletion of region 5,137,301 to 5,139,463 from chromosome X.
+
+![homDel-chrX_5137301_5139463](examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.pdf "example")
+
 ## Uses
 
 Currently compatible with GenomeSTRiP discovery & CNV output.
