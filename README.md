@@ -4,7 +4,7 @@
 
 Homozygous deletion of region 5,137,301 to 5,139,463 from chromosome X.
 
-![homDel-chrX_5137301_5139463](https://github.com/brittanyhowell/sv-view/blob/master/examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.pdf "example")
+![homDel-chrX_5137301_5139463](https://github.com/brittanyhowell/sv-view/blob/master/examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.png "example")
 
 ## Uses
 
