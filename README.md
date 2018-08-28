@@ -1,10 +1,10 @@
 # Viewing SVs at a read level
 
-## Example plot:
+## Example plot
 
 Homozygous deletion of region 5,137,301 to 5,139,463 from chromosome X.
 
-![homDel-chrX_5137301_5139463](examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.pdf "example")
+![homDel-chrX_5137301_5139463](https://github.com/brittanyhowell/sv-view/blob/master/examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.pdf "example")
 
 ## Uses
 
@@ -33,11 +33,11 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
 
     Output: One plot per SV, coverage and read details
 
-## Why are there so many folders?
+## Why there are so many folders
 
 There are multiple Go scripts in this repo, and Go can only manage one 'main' per directory.
 
-### But doesn't that makes you a really bad Go user?
+### But doesn't that makes you a really bad Go user
 
 Yes. Yes it does!  
 And yet here we are!
