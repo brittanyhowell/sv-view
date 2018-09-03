@@ -1,16 +1,10 @@
 #!/bin/bash
 
-## what I need to do: 
-# Make files per sample
-# add a reporting thing, to count how many SVs of each type in the CNV thing. please. 
-
-# Maybe it's better to make a folder per sample, work in there, and then at the end, move the plots into a directory with all samples. 
-
-
 ##Extract specified regions from bamfile
 
 ## This script takes output from Genome STRiP - CNV pipeline (more to be added later) and prints a plot of reads in the SVs per sample. 
 ## Why? Because it's nice to visualise what the SV caller saw, and therefore what it calls as an SV, to train yourself on what a "real" one might be.
+
 
 ## Input files needed: 
 # Interval table from CNV, with columns as arranged in github.com/brittanyhowell/sv-detect/blob/master/genomestrip/extract_genotyped_cnv.sh
@@ -23,17 +17,19 @@
     bamDIR=/lustre/scratch115/projects/interval_wgs/testBams/
     ## Location of raw table:
     # STinDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/kw8/genomestrip/cnv_discovery/cnv_output/results/ 
-    STinDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/kw8/genomestrip/discovery/
+    #STinDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/kw8/genomestrip/discovery/
+    STinDIR=$HOME
     ## Name of the raw table
     # STinTab="gs_cnv.reduced.genotypes.txt"   
-    STinTab="226_discovery_genotypes.txt" 
+    #STinTab="226_discovery_genotypes.txt" 
+    STinTab="test.txt"
     ## Use array job:
     sample="EGAN00001214506" 
 
 
     # Scripts and junk
     scriptDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/scripts/
-    wkDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/discovery-aug20/
+    wkDIR=/lustre/scratch115/projects/interval_wgs/analysis/sv/viewSV/exampleRun/
     plotDIR="${wkDIR}/plots/${sample}"
     mkdir -p ${plotDIR}
     
@@ -132,8 +128,8 @@
                 ${R_version}/Rscript ${scriptDIR}/assignBins.R -d ${ABinDIR} -f ${ABinTab} -o ${ABoutDIR}
             done
 
-            echo "removing reads directory: ${RBCoutDIR}"
-            rm -r ${RBCoutDIR}
+            # echo "removing reads directory: ${RBCoutDIR}"
+            # rm -r ${RBCoutDIR}
 
            ## Retrieve binned tables from ABoutDIR and split the records into their cigar constituents
            ## Put output in SCoutDIR/sample
@@ -150,8 +146,8 @@
                 ${go_version}/go run ${scriptDIR}/splitCigar/splitCigar.go -inDIR=${SCbinDIR} -binFile=${SCbinFile} -outPath=${SCoutDIR}
             done
         
-        echo "removing binned tables DIR: ${ABoutDIR}"
-        rm -r ${ABoutDIR}
+        # echo "removing binned tables DIR: ${ABoutDIR}"
+        # rm -r ${ABoutDIR}
 
         ## Retrieve split tables from SCoutDIR and plot them. 
         ## Put output in VRoutDIR/sample
