@@ -37,7 +37,7 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
     HX7_17624:5:2213:2757:52608_1   chr1    1277830 1277981 0       23M128S     0   AS:i:23     p----R-2----
 
     ```
-1. [assignBins.R](https://github.com/brittanyhowell/sv-view/blob/master/assignBins.R)
+1. [assignBins.R](assignBins.R)
 
     Output: Same table, with appended column with height value for reads, to allow non-overlapping plotting
 
