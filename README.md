@@ -4,7 +4,7 @@
 
 Homozygous deletion of region 5,137,301 to 5,139,463 from chromosome X.
 
-![homDel-chrX_5137301_5139463](https://github.com/brittanyhowell/sv-view/blob/master/examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.png "example")
+![homDel-chrX_5137301_5139463](examplePlot/EGAN00001214506-homDel-chrX_5137301_5139463.png "example")
 
 ## Uses
 
@@ -14,9 +14,9 @@ Currently compatible with GenomeSTRiP discovery & CNV output.
 
 ## How it works
 
-Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/master/extract_regions.sh) executes 5 steps:
+Wrapper [extract_regions.sh](extract_regions.sh) executes 5 steps:
 
-1. [separateTable.R](https://github.com/brittanyhowell/sv-view/blob/master/separateTable.R)
+1. [separateTable.R](separateTable.R)
 
    Input: results table from either Genome STRiP pipeline  
    Output: Coordinates of SVs for each sample and zygosity of SV (ref/het/hom/duplication)
@@ -27,7 +27,7 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
     chr1    1934917 1935701 DEL_P0001_156   782     hetDel
     ```
 
-1. [readBamChunks.go](https://github.com/brittanyhowell/sv-view/blob/master/readBamChunks/readBamChunks.go)
+1. [readBamChunks.go](readBamChunks/readBamChunks.go)
 
     Output: Table of coordinates and extra information of reads aligned to SV +/- 1.5kb
 
@@ -48,7 +48,7 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
     HX7_17624:5:2213:2757:52608_1   1277830    1277981   152    3   23M128S     0       AS:i:23     p----R-2----    0
 
     ```
-1. [splitCigar.go](https://github.com/brittanyhowell/sv-view/blob/master/splitCigar/splitCigar.go)
+1. [splitCigar.go](splitCigar/splitCigar.go)
 
     Output: Converted table: from one row per read, to one row per cigar operator
 
@@ -59,7 +59,7 @@ Wrapper [extract_regions.sh](https://github.com/brittanyhowell/sv-view/blob/mast
     HX2_17657:5:1212:17421:67217_1  1277819 1277969 2   60  one 151 0   151M        M   151
     HX7_17624:5:2213:2757:52608_1   1277830 1277852 3   0   two 23  0   23M128S     M   23
     ```
-1. [viewRegions.R](https://github.com/brittanyhowell/sv-view/blob/master/viewRegions.R)
+1. [viewRegions.R](viewRegions.R)
 
     Output: One plot per SV, coverage and read details
 
