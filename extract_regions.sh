@@ -79,7 +79,7 @@
         
         ## Use raw GS table, separate out the relevant colums for the current sample. Can only have non-reference, or all.  
 
-
+        
         # File with original data
         if [ -f ${STinDIR}/${STinTab} ]; then
             echo "file $STinDIR exists ...continuing" 
