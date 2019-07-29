@@ -86,7 +86,7 @@ inputType <- opt$software # Options include CNV right now. #
   full <- NULL
   colnames(sample.bind) <- c("chr", "start", "stop", "ID", "len", sample.name)
 
-# Needs changing, because this is currently set up for the CNV data and nothing else..
+# Run function based on software type
   if (inputType=="CNV"){
     converted <- as.data.frame(sapply(sample.bind[,6], CNVConvert))
   } else if (inputType=="discovery"){
